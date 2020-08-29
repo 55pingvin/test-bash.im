@@ -1,21 +1,28 @@
 <!-- Modal -->
-{{ form_start(complaintForm) }}
-<div class="modal fade" id="complaintModal" tabindex="-1" role="dialog" aria-labelledby="complaintModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="complaintModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                {{ form_widget(complaintForm) }}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">{% trans %}Send{% endtrans %}</button>
+
+<div class="modal fade" id="complaintModal" tabindex="-1" role="dialog" aria-labelledby="complaintModalLabel"
+     aria-hidden="true">
+    <form id="complaint-form'">
+        <input type="hidden" id="complaint-post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="complaintModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="" id="complaint-text"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="submitComplaint">
+                        {% trans %}Send{% endtrans %}
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
-{{ form_end(complaintForm) }}

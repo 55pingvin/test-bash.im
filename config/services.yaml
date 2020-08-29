@@ -29,3 +29,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Command\RedisDelete:
+        tags:
+            - name: 'console.command'
+              command: 'redis:delete-by-key'
+
+    App\Command\PostAdd:
+        tags:
+            - name: 'console.command'
+              command: 'post:add'

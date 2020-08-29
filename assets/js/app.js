@@ -48,34 +48,37 @@ let complaintBtn = $('button.btn-complaint');
 complaintBtn.on('click', function(){
 
     let post = $(this).data('post');
-    let $postInputField = $('#complaint_post');
+    $('#complaint-post').val(post);
+    submitComplaint.prop('disabled', false);
 
-    $postInputField.val(post);
-    console.log($postInputField);
 
-    // $.ajax({
-    //     url:'/rate',
-    //     type: "POST",
-    //     dataType: "json",
-    //     data: {
-    //         "type": type,
-    //         "post_id": post
-    //     },
-    //     async: true,
-    //     success: function (data)
-    //     {
-    //         if (data['success']) {
-    //             parent.children('span.rate-score').html(data['score']);
-    //         }
-    //
-    //         alert(data['message']);
-    //
-    //     },
-    //     error: function (data)
-    //     {
-    //         alert('!!! что-то пошло не так !!!');
-    //     },
-    // });
-    // return false;
+});
 
+
+let submitComplaint = $('#submitComplaint')
+
+submitComplaint.on('click', function () {
+
+    submitComplaint.prop('disabled', true);
+
+    $.ajax({
+        url:'/complaint',
+        type: "POST",
+        dataType: "json",
+        data: {
+            "text":  $('#complaint-text').val(),
+            "post_id": $('#complaint-post').val()
+        },
+        async: true,
+        success: function (data)
+        {
+            $('#complaintModal').modal('hide')
+            alert(data['message']);
+        },
+        error: function (data)
+        {
+            alert('!!! что-то пошло не так !!!');
+        },
+    });
+    return false;
 });

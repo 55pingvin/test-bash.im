@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 
+use App\Entity\Complaint;
 use App\Entity\Post;
 use App\Entity\PostRate;
+use App\Form\ComplaintType;
 use App\Form\PostType;
 use App\Repository\PostRateRepository;
 use App\Repository\PostRepository;
@@ -61,12 +63,44 @@ class AjaxController extends AbstractController
                 $entityManager->persist($post);
                 $entityManager->flush();
 
-
                 $result['message'] = 'Ваш голос учтен';
                 $result['success'] = true;
                 $result['score'] = $post->getRate();
 
             }
+        }
+
+        return new JsonResponse($result);
+    }
+
+
+    /**
+     * @Route("/complaint", name="post_complaint")
+     * @param Request $request
+     * @return Response
+     */
+    public function complaint(Request $request): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $postRepository = $entityManager->getRepository(Post::class);
+
+        $post = $postRepository->find($request->request->get('post_id'));
+
+        $result['success'] = false;
+        $result['message'] = 'Ошибка отпрвки жалобы';
+
+        if ($post) {
+            $complaint = new Complaint();
+
+            $complaint->setContent($request->request->get('text'));
+            $complaint->setPost($post);
+
+            $entityManager->persist($complaint);
+            $entityManager->flush();
+
+            $result['message'] = 'Жалоба отправлена';
+            $result['success'] = true;
         }
 
         return new JsonResponse($result);

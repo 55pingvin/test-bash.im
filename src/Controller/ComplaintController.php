@@ -62,6 +62,9 @@ class ComplaintController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="complaint_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param Complaint $complaint
+     * @return Response
      */
     public function edit(Request $request, Complaint $complaint): Response
     {
@@ -82,6 +85,9 @@ class ComplaintController extends AbstractController
 
     /**
      * @Route("/{id}", name="complaint_delete", methods={"DELETE"})
+     * @param Request $request
+     * @param Complaint $complaint
+     * @return Response
      */
     public function delete(Request $request, Complaint $complaint): Response
     {

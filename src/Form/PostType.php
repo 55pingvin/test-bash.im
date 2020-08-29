@@ -23,6 +23,7 @@ class PostType extends AbstractType
                     'label' => false
                 ]
             )
+            ->add('alias')
         ;
     }
 

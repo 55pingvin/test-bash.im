@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
  * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(name="post",indexes={@ORM\Index(name="idx_post_alias", columns={"alias"})})
  */
 class Post
 {
@@ -54,9 +55,14 @@ class Post
     private $ipv4;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default":0})
      */
-    private $rate;
+    private $rate = 0;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $alias;
 
     public function __construct()
     {
@@ -172,6 +178,18 @@ class Post
     public function setRate(int $rate): self
     {
         $this->rate += $rate;
+
+        return $this;
+    }
+
+    public function getAlias(): ?string
+    {
+        return $this->alias;
+    }
+
+    public function setAlias(?string $alias): self
+    {
+        $this->alias = $alias;
 
         return $this;
     }
