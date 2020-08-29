@@ -6,6 +6,17 @@ const $ = require('jquery');
 // the bootstrap module doesn't export/return anything
 require('bootstrap');
 
+function blockUnblockBtn(btn, field) {
+    field.keyup(function () {
+        if (field.val().length !== 0) {
+            btn.prop('disabled', false);
+        } else {
+            btn.prop('disabled', true);
+        }
+    });
+}
+
+
 let rateBtn = $('button.btn-rate');
 
 rateBtn.on('click', function(){
@@ -43,19 +54,31 @@ rateBtn.on('click', function(){
 
 });
 
+let postContentField = $('#post_content');
+let postSubmitBtn = $('#post_submit');
+
+postSubmitBtn.prop('disabled', true);
+
+postContentField.keyup(function () {
+    blockUnblockBtn(postSubmitBtn, postContentField);
+});
+
 let complaintBtn = $('button.btn-complaint');
 
 complaintBtn.on('click', function(){
 
     let post = $(this).data('post');
     $('#complaint-post').val(post);
-    submitComplaint.prop('disabled', false);
-
 
 });
 
+let submitComplaint = $('#submitComplaint');
+let complaintField = $('#complaint-text');
 
-let submitComplaint = $('#submitComplaint')
+complaintField.keyup(function () {
+    blockUnblockBtn(submitComplaint, complaintField);
+});
+
 
 submitComplaint.on('click', function () {
 
@@ -82,3 +105,5 @@ submitComplaint.on('click', function () {
     });
     return false;
 });
+
+

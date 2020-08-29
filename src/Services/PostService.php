@@ -11,19 +11,26 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PostService
 {
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     /** Метод получения постов
      * @param $em
      * @param $paginator
      * @param $request
      * @return mixed
      */
-    public function getPostList(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request)
+    public function getPostList(PaginatorInterface $paginator, Request $request)
     {
-        $postRepository = $em->getRepository(Post::class);
+        $postRepository = $this->entityManager->getRepository(Post::class);
 
         $postQuery = $postRepository->getPostList();
 
-        $query = $em->createQuery($postQuery->getDQL());
+        $query = $this->entityManager->createQuery($postQuery->getDQL());
 
         return $paginator->paginate(
             $query,
@@ -38,9 +45,9 @@ class PostService
      * @param int $count
      * @return mixed
      */
-    public function getTopPostList(EntityManagerInterface $em, int $count = 10)
+    public function getTopPostList(int $count = 10)
     {
-        $postRepository = $em->getRepository(Post::class);
+        $postRepository = $this->entityManager->getRepository(Post::class);
 
         return $postRepository->getTopPostList()->getResult();
 

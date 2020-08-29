@@ -24,28 +24,11 @@ class IndexController extends AbstractController
      */
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
-        $cacheKey = 'cache-first-page';
-        $cacheTTL = 600;
-
-        $redis = new \Predis\Client();
 
         $pagination = null;
-        $postService = new PostService();
+        $postService = new PostService($em);
 
-        if ($request->getRequestUri() === '/') {
-            $pagination = $redis->get($cacheKey);
-            if (!$pagination) {
-                $pagination = $postService->getPostList($em, $paginator, $request);
-
-                $redis->set($cacheKey, serialize($pagination));
-                $redis->expire($cacheKey, $cacheTTL);
-
-            } else {
-                $pagination = unserialize($pagination);
-            }
-        } else {
-            $pagination = $postService->getPostList($em, $paginator, $request);
-        }
+        $pagination = $postService->getPostList($paginator, $request);
 
         $complaint = new Complaint();
         $complaintForm = $this->createForm(ComplaintType::class, $complaint);
@@ -66,8 +49,25 @@ class IndexController extends AbstractController
      */
     public function top(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
-        $postService = new PostService();
-        $postList = $postService->getTopPostList($em);
+
+        $cacheKey = 'cache-top-page';
+        $cacheTTL = 600;
+        $redis = new \Predis\Client();
+
+        $postList = $redis->get($cacheKey);
+
+        if (!$postList) {
+
+            $postService = new PostService($em);
+
+            $postList = $postService->getTopPostList();
+
+            $redis->set($cacheKey, serialize($postList));
+            $redis->expire($cacheKey, $cacheTTL);
+
+        } else {
+            $postList = unserialize($postList);
+        }
 
         $complaint = new Complaint();
         $complaintForm = $this->createForm(ComplaintType::class, $complaint);
