@@ -1,0 +1,20 @@
+{
+  "name": "my-pastbin",
+  "version": "1.0.0",
+  "description": "test project for 3Snet",
+  "main": "index.js",
+  "author": "Sergey Stepin",
+  "license": "MIT",
+  "dependencies": {
+    "encode": "^1.0.1"
+  },
+  "devDependencies": {
+    "@symfony/webpack-encore": "^0.30.2",
+    "bootstrap": "^4.5.2",
+    "jquery": "^3.5.1",
+    "node-sass": "^4.14.1",
+    "popper.js": "^1.16.1",
+    "sass-loader": "^8.0.0",
+    "webpack-notifier": "^1.6.0"
+  }
+}

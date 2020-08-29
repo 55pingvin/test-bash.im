@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="eeaabb5d-de1d-46f6-b2e1-40040b72518f" name="http://my-pastbin.local" url="http://my-pastbin.local">
+        <fileTransfer port="0" mountedRoot="$PROJECT_DIR$/public" accessType="MOUNT" />
+      </webServer>
+    </option>
+  </component>
+</project>
