@@ -5,9 +5,9 @@ namespace App\Controller;
 use App\Entity\Complaint;
 use App\Entity\Post;
 use App\Form\ComplaintType;
-use App\Services\PostService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Predis\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,11 +24,44 @@ class IndexController extends AbstractController
      */
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
+        $cacheKey = 'cache-first-page';
+        $cacheTTL = 600;
+
+        $paginatorLimit = 10;
+
+        $redis = new Client();
 
         $pagination = null;
-        $postService = new PostService($em);
 
-        $pagination = $postService->getPostList($paginator, $request);
+        $postRepository = $em->getRepository(Post::class);
+
+        $postQuery = $postRepository->getPostList();
+
+        $paginatorPage = $request->query->getInt('page', 1);
+
+        if ($paginatorPage === 1) {
+            $pagination = $redis->get($cacheKey);
+            if (!$pagination) {
+
+                $pagination = $paginator->paginate(
+                    $em->createQuery($postQuery->getDQL()),
+                    $paginatorPage,
+                    $paginatorLimit
+                );
+
+                $redis->set($cacheKey, serialize($pagination));
+                $redis->expire($cacheKey, $cacheTTL);
+
+            } else {
+                $pagination = unserialize($pagination);
+            }
+        } else {
+            $pagination = $paginator->paginate(
+                $em->createQuery($postQuery->getDQL()),
+                $paginatorPage,
+                $paginatorLimit
+            );
+        }
 
         $complaint = new Complaint();
         $complaintForm = $this->createForm(ComplaintType::class, $complaint);
@@ -52,15 +85,15 @@ class IndexController extends AbstractController
 
         $cacheKey = 'cache-top-page';
         $cacheTTL = 600;
-        $redis = new \Predis\Client();
+        $redis = new Client();
 
         $postList = $redis->get($cacheKey);
 
         if (!$postList) {
 
-            $postService = new PostService($em);
+            $postRepository = $em->getRepository(Post::class);
 
-            $postList = $postService->getTopPostList();
+            $postList = $postRepository->getTopPostList()->getResult();
 
             $redis->set($cacheKey, serialize($postList));
             $redis->expire($cacheKey, $cacheTTL);

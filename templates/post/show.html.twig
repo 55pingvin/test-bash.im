@@ -7,20 +7,45 @@
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ post.id }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ post.content }}</td>
-            </tr>
-            <tr>
-                <th>Created_at</th>
-                <td>{{ post.createdAt ? post.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <td>{{ post.id }}</td>
+        </tr>
+        <tr>
+            <th>Content</th>
+            <td>{{ post.content }}</td>
+        </tr>
+        <tr>
+            <th>Created_at</th>
+            <td>{{ post.createdAt ? post.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
         </tbody>
     </table>
+    {% if post.complaints %}
+
+        <div>
+            <h3>Жалобы</h3>
+
+            {% for complaint in post.complaints %}
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ complaint.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Content</th>
+                        <td>{{ complaint.content }}</td>
+                    </tr>
+                    <tr>
+                        <th>Created_at</th>
+                        <td>{{ complaint.createdAt ? complaint.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <a href="{{ path('post_index') }}">back to list</a>
 
