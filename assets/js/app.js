@@ -28,13 +28,9 @@ rateBtn.on('click', function(){
     parent.children('button.btn-rate').prop('disabled', true);
 
     $.ajax({
-        url:'/rate',
+        url:'/rate/'+ type +'/' + post,
         type: "POST",
         dataType: "json",
-        data: {
-            "type": type,
-            "post_id": post
-        },
         async: true,
         success: function (data)
         {
@@ -85,17 +81,16 @@ submitComplaint.on('click', function () {
     submitComplaint.prop('disabled', true);
 
     $.ajax({
-        url:'/complaint',
+        url:'/complaint/post/' + $('#complaint-post').val(),
         type: "POST",
         dataType: "json",
         data: {
             "text":  $('#complaint-text').val(),
-            "post_id": $('#complaint-post').val()
         },
         async: true,
         success: function (data)
         {
-            $('#complaintModal').modal('hide')
+            $('#complaintModal').modal('hide');
             alert(data['message']);
         },
         error: function (data)

@@ -17,6 +17,8 @@ class ComplaintController extends AbstractController
 {
     /**
      * @Route("/", name="complaint_index", methods={"GET"})
+     * @param ComplaintRepository $complaintRepository
+     * @return Response
      */
     public function index(ComplaintRepository $complaintRepository): Response
     {
@@ -52,6 +54,8 @@ class ComplaintController extends AbstractController
 
     /**
      * @Route("/{id}", name="complaint_show", methods={"GET"})
+     * @param Complaint $complaint
+     * @return Response
      */
     public function show(Complaint $complaint): Response
     {

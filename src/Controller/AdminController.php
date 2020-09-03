@@ -17,6 +17,8 @@ class AdminController extends AbstractController
 {
     /**
      * @Route("/", name="admin", methods={"GET"})
+     * @param PostRepository $postRepository
+     * @return Response
      */
     public function index(PostRepository $postRepository): Response
     {

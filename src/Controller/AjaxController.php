@@ -10,6 +10,10 @@ use App\Form\ComplaintType;
 use App\Form\PostType;
 use App\Repository\PostRateRepository;
 use App\Repository\PostRepository;
+use App\Services\ComplaintService;
+use App\Services\RateService;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use phpDocumentor\Reflection\Types\False_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,53 +25,30 @@ use Symfony\Component\HttpFoundation\Request;
 class AjaxController extends AbstractController
 {
     /**
-     * @Route("/rate", name="post_rate")
+     * @Route("/rate/{type}/{post}", name="post_rate")
      * @param Request $request
+     * @param Post $post
+     * @param string $type
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
-    public function ratePost(Request $request): Response
+    public function ratePost(Request $request, Post $post, string $type): Response
     {
         $result['success'] = false;
         $result['message'] = 'Вы голосовали ранее';
 
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $postId = $request->request->get('post_id');
-        $type = $request->request->get('type');
         $ipv4 = $request->getClientIp();
 
-        $postRateRepository = $entityManager->getRepository(PostRate::class);
-        $postRate = $postRateRepository->findOneBy(
-            [
-                'post' => $postId,
-                'ipv4' => $ipv4 // Такая проверка будет печальной если пользователь сидит за NAT один проголосует, а другие нет
-            ]
-        );
+        $postRateRepository = $this->getDoctrine()->getRepository(PostRate::class);
+        $postRepository = $this->getDoctrine()->getRepository(Post::class);
 
-        if (!$postRate) {
-            $postRepository = $entityManager->getRepository(Post::class);
-            $post = $postRepository->find($postId);
+        $rateService = new RateService($postRateRepository, $postRepository,$post, $type, $ipv4);
 
-            if ($post && $type) {
-
-                $rate = ($type === 'like') ? 1 : -1;
-
-                $postRate = new PostRate();
-                $postRate->setPost($post);
-                $postRate->setRate($rate);
-                $postRate->setIpv4($ipv4);
-
-                $post->setRate($rate);
-
-                $entityManager->persist($postRate);
-                $entityManager->persist($post);
-                $entityManager->flush();
-
-                $result['message'] = 'Ваш голос учтен';
-                $result['success'] = true;
-                $result['score'] = $post->getRate();
-
-            }
+        if($score = $rateService->rate()) {
+            $result['message'] = 'Ваш голос учтен';
+            $result['success'] = true;
+            $result['score'] = $score;
         }
 
         return new JsonResponse($result);
@@ -75,32 +56,29 @@ class AjaxController extends AbstractController
 
 
     /**
-     * @Route("/complaint", name="post_complaint")
+     * @Route("/complaint/post/{post}", name="post_complaint", requirements={"post_id"="\d+"})
      * @param Request $request
+     * @param Post $post
      * @return Response
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
-    public function complaint(Request $request): Response
+    public function complaint(Request $request, Post $post): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $postRepository = $entityManager->getRepository(Post::class);
-
-        $post = $postRepository->find($request->request->get('post_id'));
-
         $result['success'] = false;
         $result['message'] = 'Ошибка отпрвки жалобы';
 
-        if ($post) {
-            $complaint = new Complaint();
+        $complaintRepository = $this->getDoctrine()->getRepository(Complaint::class);
 
-            $complaint->setContent($request->request->get('text'));
-            $complaint->setPost($post);
+        $text = $request->request->get('text');
 
-            $entityManager->persist($complaint);
-            $entityManager->flush();
+        if ($post && $text) {
+            $complaintService = new ComplaintService($complaintRepository, $post);
 
-            $result['message'] = 'Жалоба отправлена';
-            $result['success'] = true;
+            if ($complaintService->save($text)) {
+                $result['message'] = 'Жалоба отправлена';
+                $result['success'] = true;
+            }
         }
 
         return new JsonResponse($result);

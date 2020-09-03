@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\PostRate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +21,15 @@ class PostRateRepository extends ServiceEntityRepository
         parent::__construct($registry, PostRate::class);
     }
 
-    // /**
-    //  * @return PostRate[] Returns an array of PostRate objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Метод сохранения PostRate
+     * @param PostRate $postRate
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function save(PostRate $postRate): void
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->_em->persist($postRate);
+        $this->_em->flush();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?PostRate
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

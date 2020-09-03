@@ -25,7 +25,7 @@ class PostRate
     private $post;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="integer", length=2)
      */
     private $rate;
 
@@ -69,12 +69,12 @@ class PostRate
         return $this;
     }
 
-    public function getRate(): ?bool
+    public function getRate(): ?int
     {
         return $this->rate;
     }
 
-    public function setRate(bool $rate): self
+    public function setRate(int $rate): self
     {
         $this->rate = $rate;
 

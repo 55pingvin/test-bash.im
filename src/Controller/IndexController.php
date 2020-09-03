@@ -27,6 +27,8 @@ class IndexController extends AbstractController
         $cacheKey = 'cache-first-page';
         $cacheTTL = 600;
 
+
+
         $paginatorLimit = 10;
 
         $redis = new Client();

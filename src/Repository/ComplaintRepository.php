@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Complaint;
+use App\Entity\PostRate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +20,18 @@ class ComplaintRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Complaint::class);
+    }
+
+    /**
+     * Метод сохранения Complaint
+     * @param Complaint $complaint
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function save(Complaint $complaint): void
+    {
+        $this->_em->persist($complaint);
+        $this->_em->flush();
     }
 
     // /**
